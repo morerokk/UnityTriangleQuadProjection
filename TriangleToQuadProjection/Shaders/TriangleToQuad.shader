@@ -65,13 +65,13 @@
 				o.worldPos = UnityObjectToClipPos(pos1);
 				o.uv = float2(0,0);
 				tristream.Append(o);
+				
+				o.worldPos = UnityObjectToClipPos(pos3);
+				o.uv = float2(0,1);
+				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
 				o.uv = float2(1,1);
-				tristream.Append(o);
-			 
-				o.worldPos = UnityObjectToClipPos(pos3);
-				o.uv = float2(0,1);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
