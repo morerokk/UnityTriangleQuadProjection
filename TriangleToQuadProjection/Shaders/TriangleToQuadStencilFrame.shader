@@ -1,18 +1,25 @@
-﻿Shader "QuadProjection/Unlit Texture"
+﻿Shader "QuadProjection/Stencil Frame"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
-		_Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
+		_Stencil("Stencil Value", Int) = 1
 		[Enum(Both,0,Front,2,Back,1)] _Cull("Sidedness", Float) = 0.0
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" "DisableBatching" = "true" }
+		Tags { "RenderType"="Opaque" "DisableBatching" = "true" "Queue"="Geometry-1" }
 
 		Pass
 		{
+			Stencil {
+				Ref [_Stencil]
+				Comp Always
+				Pass Replace
+			}
+		
 			Cull [_Cull]
+			ZWrite Off
+			ColorMask 0
 		
 			CGPROGRAM
 			#pragma geometry geom
@@ -26,32 +33,21 @@
 
 			struct appdata{
 				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
 			};
 			 
 			struct v2g{
 				float4 objPos : SV_POSITION;
-				float2 uv : TEXCOORD0;
 			};
 			 
 			struct g2f{
 				float4 worldPos : SV_POSITION;
-				float2 uv : TEXCOORD0;
 			};
-
-			sampler2D _MainTex;
-			
-			float4 _MainTex_ST;
-			
-			float _Cutoff;
 			
 			v2g vert (appdata v)
 			{
 				v2g o;
 				o.objPos = v.vertex;
-				o.uv = v.uv;
 				
-				//UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
 			
@@ -70,18 +66,12 @@
 				//First triangle
 				g2f o;
 				o.worldPos = UnityObjectToClipPos(pos1);
-				o.uv = float2(1,0);
-				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 				
 				o.worldPos = UnityObjectToClipPos(pos3);
-				o.uv = float2(0,0);
-				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
-				o.uv = float2(0,1);
-				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
@@ -94,34 +84,20 @@
 				);
 			
 				o.worldPos = UnityObjectToClipPos(pos1);
-				o.uv = float2(1,0);
-				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
-				o.uv = float2(0,1);
-				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos3);
-				o.uv = float2(1,1);
-				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
 			}
 			
-			fixed4 frag (g2f i, fixed facing : VFACE) : SV_Target
-			{
-				// Un-mirror texture on backside
-				i.uv.x = facing > 0 ? i.uv.x : 1.0 - i.uv.x;
-			
-				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv);
-				
-				clip(col.a - _Cutoff);
-				
-				return col;
+			fixed4 frag (g2f i) : SV_Target
+			{				
+				return fixed4(0,0,0,0);
 			}
 			ENDCG
 		}
