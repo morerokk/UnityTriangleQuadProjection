@@ -18,6 +18,7 @@
 			#pragma fragment frag
 			// make fog work
 			#pragma multi_compile_fog
+			#pragma target 4.0
 			
 			#include "UnityCG.cginc"
 
@@ -98,8 +99,10 @@
 				tristream.RestartStrip();
 			}
 			
-			fixed4 frag (g2f i) : SV_Target
+			fixed4 frag (g2f i, fixed facing : VFACE) : SV_Target
 			{
+				i.uv.x = facing > 0 ? i.uv.x : 1.0 - i.uv.x;
+			
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
 				return col;
