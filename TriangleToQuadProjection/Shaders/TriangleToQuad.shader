@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
 	}
 	SubShader
 	{
@@ -39,6 +40,10 @@
 
 			sampler2D _MainTex;
 			
+			float4 _MainTex_ST;
+			
+			float _Cutoff;
+			
 			v2g vert (appdata v)
 			{
 				v2g o;
@@ -65,14 +70,17 @@
 				g2f o;
 				o.worldPos = UnityObjectToClipPos(pos1);
 				o.uv = float2(1,0);
+				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 				
 				o.worldPos = UnityObjectToClipPos(pos3);
 				o.uv = float2(0,0);
+				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
 				o.uv = float2(0,1);
+				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
@@ -86,14 +94,17 @@
 			
 				o.worldPos = UnityObjectToClipPos(pos1);
 				o.uv = float2(1,0);
+				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
 				o.uv = float2(0,1);
+				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos3);
 				o.uv = float2(1,1);
+				o.uv = TRANSFORM_TEX(o.uv, _MainTex);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
@@ -105,6 +116,9 @@
 			
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
+				
+				clip(col.a - _Cutoff);
+				
 				return col;
 			}
 			ENDCG
