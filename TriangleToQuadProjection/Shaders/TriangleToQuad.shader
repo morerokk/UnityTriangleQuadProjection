@@ -42,7 +42,6 @@
 			{
 				v2g o;
 				o.objPos = v.vertex;
-				//o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				o.uv = v.uv;
 				
 				//UNITY_TRANSFER_FOG(o,o.vertex);
@@ -64,15 +63,15 @@
 				//First triangle
 				g2f o;
 				o.worldPos = UnityObjectToClipPos(pos1);
-				o.uv = input[0].uv;
+				o.uv = float2(0,0);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
-				o.uv = input[1].uv;
+				o.uv = float2(1,1);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos3);
-				o.uv = input[2].uv;
+				o.uv = float2(0,1);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
@@ -85,15 +84,15 @@
 				);
 			
 				o.worldPos = UnityObjectToClipPos(pos1);
-				o.uv = input[0].uv;
+				o.uv = float2(0,0);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos2);
-				o.uv = input[1].uv;
+				o.uv = float2(1,1);
 				tristream.Append(o);
 			 
 				o.worldPos = UnityObjectToClipPos(pos3);
-				o.uv = input[2].uv;
+				o.uv = float2(1,0);
 				tristream.Append(o);
 			 
 				tristream.RestartStrip();
